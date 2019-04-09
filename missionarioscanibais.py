@@ -1,3 +1,4 @@
+import time
 #missionarioscanibais.py
 
 Missionarios = 3
@@ -22,6 +23,7 @@ class Barco:
         margem_B.C = margem_B.C + self.C
 
 class Estado:
+    i = 0
     def __init__(self,margem_E,margem_D,rodada):
         self.margem_E = margem_E
         self.margem_D = margem_D
@@ -30,10 +32,6 @@ class Estado:
         self.P = []
         self.is_Objetivo = self.teste_Objetivo()
         
-        if self.is_Objetivo:
-            print("Objetivo atingido")
-            return 0
-
     def teste_Estado(self):
         if((self.margem_E.C > self.margem_E.M and self.margem_E.M > 0) or (self.margem_D.C > self.margem_D.M and self.margem_D.M > 0)) :
             #print("Missionário Morre")
@@ -54,6 +52,7 @@ class Estado:
     def set_Possibs(self):
         OP = [[0,1],[1,0],[1,1],[0,2],[2,0]]
         
+        i = 0
         for op in OP:
             #print(op)
             barco = Barco(op[0],op[1])
@@ -70,23 +69,35 @@ class Estado:
             new = Estado(margem_E,margem_D,self.rodada+1)
             
             if(new.valido):
+                new.i = i
                 self.P.append(new)
+                i = i + 1
     
     def __str__(self):
-        return "Margem Esquerda: " + str(self.margem_E) + "\nMargem Direita: " + str(self.margem_D) + "\nRodada: " + str(self.rodada)
+        return "Opção:" + str(self.i) + "\nMargem Esquerda: " + str(self.margem_E) + "\nMargem Direita: " + str(self.margem_D) + "\nRodada: " + str(self.rodada)
 
 
+def percorre(P):
+    if P[0].is_Objetivo:
+        print("Objetivo")
+        return None
+    else:
+        P[0].set_Possibs()
+        if len(P[0].P)>1:
+            for p in P[0].P:
+                print(p)
+                P.append(p)
+        P.remove(P[0])
+        time.sleep(1)
+        percorre(P)
+            
+            
+    
 
 estado_Inicial = Estado(Margem(0,0),Margem(Missionarios,Canibais),0)
-estado_Inicial.set_Possibs()
-for pos in estado_Inicial.P:
-    print(pos)
-    pos.set_Possibs()
-    for p in pos.P:
-        print(p)
+P = [estado_Inicial]
+percorre(P)
 
-
-    
 
 
 
