@@ -225,30 +225,36 @@ def main():
     estado_Inicial = Estado(Margem(0,0),Margem(Missionarios,Canibais),0)
     NODES.append(estado_Inicial)
     
+    rod_Ant = 0
     cont = 0
     while cont < len(NODES): #Enquanto não chegar no fim da fila
-        if NODES[cont].is_Objetivo: #Se o nó sendo testado for o objetivo do problema proposto
+        if NODES[0].is_Objetivo: #Se o nó sendo testado for o objetivo do problema proposto
             """
             Imprime a declaração de sucesso, o estado encontrado, a quantidade 
             de nós testados e finaliza a fila de nós
             """
             print("Objetivo encontrado!")
-            print(NODES[cont])
+            print(NODES[0])
             print("Na tentativa:",cont)
-            NODES.clear()
+            cont = len(NODES) + 1
+            
+            #NODES.clear()
         else:   #Se ainda não for o objetivo
             #Adiciona os nós filhos à fila de nós
-            NODES[cont].set_Possibs()
-            for p in NODES[cont].P:
+            NODES[0].set_Possibs()
+            for p in NODES[0].P:
                 NODES.append(p)
+                
+        if NODES[0].rodada > rod_Ant:
+            rod_Ant = NODES[0].rodada
+            print(NODES[0].rodada)
+            print("Testadas:",cont, "possibilidades")
+            print(len(NODES)-len(NODES[0].P), "possibilidades a serem testadas\n")
         
-        
-        if cont%1000 == 0 and cont != 0: #Imprime o número de tentativas a cada 1000 iteraçãos
-            print("Testadas: ",cont, "possibilidades")
-        
-    
+        NODES.remove(NODES[0])
         cont = cont + 1
-
+    
+    NODES.clear()
 if __name__ == "__main__":
     main()
 
