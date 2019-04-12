@@ -13,12 +13,13 @@ Matrícula: 201620605
 Parâmetros do Problema:
     Missionarios (int): Número de missionários a serem atravessados
     Canibais (int): Número de canibais a serem atravessados
+    n_Barco (int): Número máximo de pessoas no barco
     OP (List): Lista com os possíveis operadores para a solução
 """
-N = 20
-Missionarios = N
-Canibais = N
-n_Barco = 4
+
+Missionarios = 5
+Canibais = 5
+n_Barco = 3
 OP = []
 
 for i in range(n_Barco+1):
@@ -27,8 +28,10 @@ for i in range(n_Barco+1):
             OP.append([i,j])
 
 print("Possíveis barcos:",OP)
+
 """
 NODES (List): Lista para a fila de nós da árvore gerada
+T_NODES (List): Lista com todos os estados já testados
 """
 NODES = []
 T_NODES = []
@@ -110,7 +113,6 @@ class Estado:
         rodada (int): Camada da árvore que esse estado se encontra
     
     Atributos:
-        estado_Pai (EstadoPai): Objeto que guarda as margens do estado pai
         valido (bool): Indica se o estado é válido de acordo com o problema proposto
         is_Objetivo (bool): Indica se o estado é o objetivo a ser atingido pela solução do problema proposto
         P (List): Lista que guardará os nós filhos gerados pelo estado
@@ -206,13 +208,13 @@ class Estado:
         """
         return "Operadores:" + str(self.OPRS) + "\nMargem Esquerda: " + str(self.margem_E) + "\nMargem Direita: " + str(self.margem_D) + "\nRodada: " + str(self.rodada)
 
-def main():
+def main(global):
     """
     Cria estado inicial, adiciona-o à fila de nós e inicia a varredura 
     a procura do estado inicial, enquanto adiciona novos estados na fila
     para também serem testados
     """
-    estado_Inicial = Estado(Margem(0,0),Margem(Missionarios,Canibais),0)
+    estado_Inicial = Estado(Margem(0,0),Margem(global.Missionarios,global.Canibais),0)
     NODES.append(estado_Inicial)
     
     rod_Ant = 0
