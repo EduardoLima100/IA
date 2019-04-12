@@ -1,3 +1,4 @@
+import time
 """ 
 Solução para o problema da travessia de missionários e canibais de uma
 margem para a outra do rio.
@@ -14,14 +15,23 @@ Parâmetros do Problema:
     Canibais (int): Número de canibais a serem atravessados
     OP (List): Lista com os possíveis operadores para a solução
 """
-Missionarios = 3
-Canibais = 3
-OP = [[1,0],[2,0],[1,1],[0,1],[0,2]]
+N = 20
+Missionarios = N
+Canibais = N
+n_Barco = 4
+OP = []
 
+for i in range(n_Barco+1):
+    for j in range(n_Barco+1):
+        if i+j!=0 and i+j<=n_Barco and not(j > i and i > 0):
+            OP.append([i,j])
+
+print("Possíveis barcos:",OP)
 """
 NODES (List): Lista para a fila de nós da árvore gerada
 """
 NODES = []
+T_NODES = []
 
 class Margem:
     """
@@ -88,20 +98,6 @@ class Barco:
         margem_B.M = margem_B.M + self.M
         margem_B.C = margem_B.C + self.C
 
-class EstadoPai:
-    """
-    Classe EstadoPai:
-        Define atributos necessários para comparar um estado com o nó que o
-        originou
-    
-    Atributos:
-        margem_E (Margem): Margem esquerda do nó anterior
-        margem_D (Margem): Margem direita do nó anterior
-    """
-    def __init__(self,margem_E,margem_D):
-        self.margem_E = margem_E
-        self.margem_D = margem_D
-
 class Estado:
     """
     Classe Estado:
@@ -124,8 +120,7 @@ class Estado:
         self.margem_E = margem_E
         self.margem_D = margem_D
         self.rodada = rodada
-        
-        self.estado_Pai = EstadoPai(Margem(0,0),Margem(0,0))
+
         self.valido = self.teste_Estado()
         self.is_Objetivo = self.teste_Objetivo()
         self.P = []
@@ -140,7 +135,6 @@ class Estado:
             False:
                 Se missionários ficarem em menor número em alguma margem do estado
                 Se não houver missionários ou canibais suficientes na margem de embarque para que o operador seja aplicado
-                Se o operador gerar um nó igual ao seu estado pai
             True:
                 Se o estado estiver de acordo com todas as regras do problema proposto
         """
@@ -149,10 +143,7 @@ class Estado:
         elif((self.margem_E.C < 0) or (self.margem_E.M < 0) or (self.margem_D.C < 0) or (self.margem_D.M < 0)):
             return False
         else:
-            if Estado.compara_Estados(self.estado_Pai,self):
-                return False
-            else:
-                return True
+            return True
     
     def teste_Objetivo(self):
         """
@@ -187,7 +178,6 @@ class Estado:
             new = Estado(margem_E,margem_D,self.rodada+1)
             
             if(new.valido):
-                new.estado_Pai = EstadoPai(self.margem_E,self.margem_D)
                 for j in self.OPRS:
                     new.OPRS.append(j)
                 new.OPRS.append(op)
@@ -227,36 +217,56 @@ def main():
     
     rod_Ant = 0
     cont = 0
-    while cont < len(NODES): #Enquanto não chegar no fim da fila
-        if NODES[0].is_Objetivo: #Se o nó sendo testado for o objetivo do problema proposto
-            """
-            Imprime a declaração de sucesso, o estado encontrado, a quantidade 
-            de nós testados e finaliza a fila de nós
-            """
-            print("Objetivo encontrado!")
-            print(NODES[0])
-            print("Na tentativa:",cont)
-            cont = len(NODES) + 1
-            
-            #NODES.clear()
-        else:   #Se ainda não for o objetivo
-            #Adiciona os nós filhos à fila de nós
-            NODES[0].set_Possibs()
-            for p in NODES[0].P:
-                NODES.append(p)
+    loop = True
+    while loop: #cont <= len(NODES): #Enquanto não chegar no fim da fila
+        if len(NODES)>0:
+            if NODES[0].is_Objetivo: #Se o nó sendo testado for o objetivo do problema proposto
+                """
+                Imprime a declaração de sucesso, o estado encontrado, a quantidade 
+                de nós testados e finaliza a fila de nós
+                """
+                print("Objetivo encontrado!")
+                print(NODES[0])
+                print("Na tentativa:",cont)
+                loop = False#cont = len(NODES) + 1
+                                
+            else:   #Se ainda não for o objetivo
+                #Adiciona os nós filhos à fila de nós
                 
-        if NODES[0].rodada > rod_Ant:
-            rod_Ant = NODES[0].rodada
-            print(NODES[0].rodada)
-            print("Testadas:",cont, "possibilidades")
-            print(len(NODES)-len(NODES[0].P), "possibilidades a serem testadas\n")
+                NODES[0].set_Possibs()
+                
+                for p in NODES[0].P:
+                    f = 0
+                    for n in T_NODES:
+                        if Estado.compara_Estados(NODES[0],n) and NODES[0].rodada%2 == n.rodada%2 and NODES[0].rodada>n.rodada:
+                            f = 1
+                    if f == 0:    
+                        NODES.append(p)
+                    
+            if NODES[0].rodada > rod_Ant:
+                rod_Ant = NODES[0].rodada
+                print(time.strftime("\n[%H:%M:%S]"))
+                print(NODES[0].rodada)
+                print("Testadas:",cont, "possibilidades")
+                print(len(NODES)-len(NODES[0].P), "possibilidades a serem testadas\n")
+            
+            T_NODES.append(NODES[0])
+            #print(NODES[0])
+            NODES.remove(NODES[0])
+            cont = cont + 1
+        else:
+            print("Todas as possibilidades foram testadas\nSolução não existe")
+            loop = False
+                        
         
-        NODES.remove(NODES[0])
-        cont = cont + 1
-    
     NODES.clear()
 if __name__ == "__main__":
     main()
+    print("Missionários:",Missionarios)
+    print("Canibais:",Canibais)
+    print("Max no barco:",n_Barco)
+    print("Possíveis barcos:",OP)
+        
 
 
 
