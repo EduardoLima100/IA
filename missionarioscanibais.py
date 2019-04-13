@@ -17,9 +17,9 @@ Parâmetros do Problema:
     OP (List): Lista com os possíveis operadores para a solução
 """
 
-Missionarios = 5
-Canibais = 5
-n_Barco = 3
+Missionarios = 6
+Canibais = 6
+n_Barco = 4
 OP = []
 
 for i in range(n_Barco+1):
