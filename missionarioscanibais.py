@@ -17,9 +17,10 @@ Parâmetros do Problema:
     OP (List): Lista com os possíveis operadores para a solução
 """
 
-Missionarios = 6
-Canibais = 6
-n_Barco = 4
+Missionarios =  3
+Canibais = 3
+n_Barco = 2
+
 OP = []
 
 for i in range(n_Barco+1):
@@ -208,13 +209,13 @@ class Estado:
         """
         return "Operadores:" + str(self.OPRS) + "\nMargem Esquerda: " + str(self.margem_E) + "\nMargem Direita: " + str(self.margem_D) + "\nRodada: " + str(self.rodada)
 
-def main(global):
+def main():
     """
     Cria estado inicial, adiciona-o à fila de nós e inicia a varredura 
     a procura do estado inicial, enquanto adiciona novos estados na fila
     para também serem testados
     """
-    estado_Inicial = Estado(Margem(0,0),Margem(global.Missionarios,global.Canibais),0)
+    estado_Inicial = Estado(Margem(0,0),Margem(Missionarios,Canibais),0)
     NODES.append(estado_Inicial)
     
     rod_Ant = 0
@@ -264,7 +265,7 @@ def main(global):
     NODES.clear()
 if __name__ == "__main__":
     main()
-    print("Missionários:",Missionarios)
+    print("\nMissionários:",Missionarios)
     print("Canibais:",Canibais)
     print("Max no barco:",n_Barco)
     print("Possíveis barcos:",OP)
